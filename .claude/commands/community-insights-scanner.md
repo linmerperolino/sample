@@ -1,46 +1,35 @@
 # Community Insights Scanner
 
-Scan Reddit and X (Twitter) for real community discussions on any topic from the last 30 days, then synthesize those insights into copy-paste-ready Claude prompts.
+Scan Reddit and X (Twitter) for real community discussions from the last 30 days on the topic below, then synthesize those insights into copy-paste-ready Claude prompts.
 
-## Usage
+**Topic:** $ARGUMENTS
 
-```
-/community-insights-scanner <topic>
-```
-
-**Examples:**
-- `/community-insights-scanner AI coding assistants`
-- `/community-insights-scanner sourdough starter troubleshooting`
-- `/community-insights-scanner Next.js 15 performance`
+If the topic above is empty, ask: "What topic should I scan Reddit and X for?"
 
 ---
 
 ## Instructions
 
-When this skill is invoked, execute the following steps in order:
+Execute the following steps in order:
 
-### Step 1 — Parse the Topic
+### Step 1 — Search Reddit (last 30 days)
 
-Extract the topic from the user's invocation arguments. If no topic is provided, ask: "What topic should I scan Reddit and X for?"
+Run **4 targeted WebSearch queries** to surface recent Reddit discussions. Use today's date minus 30 days for the `after:` filter:
 
-### Step 2 — Search Reddit (last 30 days)
-
-Run **4 targeted WebSearch queries** to surface recent Reddit discussions:
-
-1. `site:reddit.com "<topic>" after:2026-02-23` — broad recent posts
-2. `site:reddit.com "<topic>" tips OR advice OR lessons learned after:2026-02-23`
-3. `site:reddit.com "<topic>" problems OR issues OR mistakes after:2026-02-23`
-4. `site:reddit.com "<topic>" best practices OR what works after:2026-02-23`
+1. `site:reddit.com "$ARGUMENTS"` — broad recent posts
+2. `site:reddit.com "$ARGUMENTS" tips OR advice OR lessons learned`
+3. `site:reddit.com "$ARGUMENTS" problems OR issues OR mistakes`
+4. `site:reddit.com "$ARGUMENTS" best practices OR what works`
 
 Collect the top results from each query. Note URLs, post titles, and any visible snippets.
 
-### Step 3 — Search X / Twitter (last 30 days)
+### Step 2 — Search X / Twitter (last 30 days)
 
 Run **3 targeted WebSearch queries** to surface recent X posts and threads:
 
-1. `site:x.com OR site:twitter.com "<topic>" after:2026-02-23`
-2. `"<topic>" x.com thread insights tips 2026`
-3. `"<topic>" twitter community what works 2026`
+1. `site:x.com OR site:twitter.com "$ARGUMENTS"`
+2. `"$ARGUMENTS" x.com thread insights tips`
+3. `"$ARGUMENTS" twitter community what works`
 
 Collect the top results. Note any viral threads, high-engagement posts, or recurring themes.
 
@@ -59,7 +48,7 @@ Use WebFetch on the **top 4–6 most relevant URLs** (mix of Reddit threads and 
 Before writing prompts, output a **"What the Community Has Figured Out"** section:
 
 ```
-## What the Community Has Figured Out (Last 30 Days): <topic>
+## What the Community Has Figured Out (Last 30 Days): $ARGUMENTS
 
 **The Consensus Shifts**
 - [insight] — seen in X posts / Y Reddit threads
@@ -106,10 +95,10 @@ Format each prompt in a fenced code block labeled `prompt`:
 As the final item, generate one **meta-prompt** — a prompt that helps the user *discover more prompts* on this topic by asking Claude to scan for new community insights itself:
 
 ````
-## Meta-Prompt: Stay Current on <topic>
+## Meta-Prompt: Stay Current on $ARGUMENTS
 
 ```prompt
-Search recent Reddit and X discussions (last 30 days) about <topic>. Identify the top 5 things the community has figured out that most tutorials still don't cover. For each insight, write me a copy-paste-ready prompt I can use immediately.
+Search recent Reddit and X discussions (last 30 days) about $ARGUMENTS. Identify the top 5 things the community has figured out that most tutorials still don't cover. For each insight, write me a copy-paste-ready prompt I can use immediately.
 ```
 ````
 
